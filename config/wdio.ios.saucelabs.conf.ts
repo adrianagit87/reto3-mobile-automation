@@ -19,6 +19,9 @@ export const config: Options.Testrunner = {
   key: sauceKey,
   region: (process.env.SAUCE_REGION ?? 'us-west-1') as Options.SauceRegions,
 
+  // SauceLabs simulator a veces tarda > 2 min en provisionar — subimos timeout
+  connectionRetryTimeout: 240_000,
+
   capabilities: [{
     platformName: 'iOS',
     'appium:automationName': 'XCUITest',

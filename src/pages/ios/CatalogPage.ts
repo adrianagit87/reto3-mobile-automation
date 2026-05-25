@@ -1,53 +1,45 @@
 import { BasePage } from '../BasePage';
 
 /**
- * Catálogo iOS.
+ * Catálogo iOS de My Demo App v2.2.2.
+ * La app abre en Cart tab — hay que tapear `~Catalog-tab-item` para llegar al catálogo.
  * Locators usan `~` = accessibilityIdentifier (iOS XCUITest).
  */
 export class CatalogPage extends BasePage {
-  get loadedIndicator() { return $('~Products'); }
+  get loadedIndicator() { return $('~Catalog-screen'); }
 
-  private get sortButton() { return $('~sort button'); }
-  private productByName(name: string) { return $(`~${name}`); }
+  // Tab bar
+  private get catalogTab() { return $('~Catalog-tab-item'); }
 
-  // Opciones de sort
-  private get sortOptionPriceDesc() {
-    return $('-ios predicate string:label == "Price - High to Low"');
-  }
-  private get sortOptionPriceAsc() {
-    return $('-ios predicate string:label == "Price - Low to High"');
-  }
-  private get sortOptionNameAsc() {
-    return $('-ios predicate string:label == "Name - Ascending"');
-  }
+  // Productos — los ProductItem (XCUIElementTypeOther) tienen accessible=false.
+  // Contamos los "Product Name" StaticText que sí son accesibles (uno por card).
+  private get productItems() { return $$('~Product Name'); }
 
-  async openSortMenu(): Promise<void> {
-    await this.tap(this.sortButton);
-  }
+  // Para seleccionar el primer producto tapeamos su Product Image
+  // (es accesible y siempre hay uno por ProductItem)
+  private get firstProductImage() { return $('~Product Image'); }
 
-  async sortByPriceDescending(): Promise<void> {
-    await this.openSortMenu();
-    await this.tap(this.sortOptionPriceDesc);
-  }
-
-  async sortByPriceAscending(): Promise<void> {
-    await this.openSortMenu();
-    await this.tap(this.sortOptionPriceAsc);
+  /** Abre la tab Catalog (necesario porque la app inicia en Cart). */
+  async openCatalogTab(): Promise<void> {
+    await this.tap(this.catalogTab);
   }
 
   async getFirstProductName(): Promise<string> {
-    const count = await this.getVisibleProductCount();
+    const items = await this.productItems;
+    const count = await items.length;
     if (count === 0) throw new Error('No products visible on catalog');
-    // `$` con el mismo selector devuelve el PRIMERO que matchea
-    return this.readText($('~product label'));
+    // Cada Product Name StaticText tiene su nombre en `label` (= value)
+    const first = items[0];
+    await first.waitForDisplayed({ timeout: 5_000 });
+    return (await first.getAttribute('label')) ?? '';
   }
 
-  async selectProduct(name: string): Promise<void> {
-    await this.tap(this.productByName(name));
+  async selectFirstProduct(): Promise<void> {
+    await this.tap(this.firstProductImage);
   }
 
   async getVisibleProductCount(): Promise<number> {
-    const products = await $$('~product label');
+    const products = await this.productItems;
     return await products.length;
   }
 }

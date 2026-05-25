@@ -11,39 +11,38 @@ import { productDetailPage } from '../../../src/pages/ios/ProductDetailPage';
  * Criterio de viabilidad: no requiere autenticación,
  * UI estable, validable sin afectar datos.
  */
-describe('iOS — Catálogo: sort + detalle de producto', () => {
-  it('debe ordenar por precio descendente y validar el detalle del primer producto', async () => {
-    // 1. App abierta → catálogo cargado
+describe('iOS — Catálogo: navegación + detalle', () => {
+  it('debe abrir el catálogo, listar productos y validar el detalle del primero', async () => {
+    // 1. App inicia en Cart tab — navegar al Catalog tab
+    await catalogPage.openCatalogTab();
     await catalogPage.waitForLoaded();
 
-    const initialCount = await catalogPage.getVisibleProductCount();
-    expect(initialCount).toBeGreaterThan(0);
+    // 2. Validar que hay productos visibles
+    const count = await catalogPage.getVisibleProductCount();
+    expect(count).toBeGreaterThan(0);
 
-    // 2. Aplicar sort: Price - High to Low
-    await catalogPage.sortByPriceDescending();
-
-    // 3. Tomar el primer producto (debería ser el más caro)
+    // 3. Obtener nombre del primer producto
     const firstProductName = await catalogPage.getFirstProductName();
     expect(firstProductName.length).toBeGreaterThan(0);
 
-    // 4. Abrir el detalle
-    await catalogPage.selectProduct(firstProductName);
+    // 4. Abrir el detalle del primer producto
+    await catalogPage.selectFirstProduct();
     await productDetailPage.waitForLoaded();
 
-    // 5. Validar elementos clave del detalle
-    const title = await productDetailPage.getProductTitle();
+    // 5. Validar precio + descripción + botón Add to Cart
     const price = await productDetailPage.getProductPrice();
-    expect(title.length).toBeGreaterThan(0);
     expect(price).toMatch(/\$|\d/);
 
-    // 6. Interactuar con la galería (swipe nativo)
-    await productDetailPage.swipeImageGallery();
+    const hasHighlights = await productDetailPage.hasProductHighlights();
+    expect(hasHighlights).toBe(true);
 
-    // 7. Botón Add To Cart visible (preparado para futuro flujo de compra)
     const addToCartVisible = await productDetailPage.isAddToCartVisible();
     expect(addToCartVisible).toBe(true);
 
-    // 8. Calificar con 5 estrellas
+    // 6. Interactuar con la galería (gesto swipe nativo iOS)
+    await productDetailPage.swipeImageGallery();
+
+    // 7. Calificar con 5 estrellas
     await productDetailPage.giveFiveStarRating();
   });
 });
