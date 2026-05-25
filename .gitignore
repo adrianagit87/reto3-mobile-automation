@@ -1,0 +1,24 @@
+node_modules/
+.env
+.env.local
+
+# Apps binaries (no versionar - pesan mucho)
+apps/*.apk
+apps/*.ipa
+apps/*.zip
+
+# WDIO / Appium artifacts
+allure-results/
+allure-report/
+logs/
+.tmp/
+screenshots/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
