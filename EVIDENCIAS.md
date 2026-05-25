@@ -136,24 +136,48 @@ En el dashboard de SauceLabs encontrarás:
 
 ### 4.1 Generación
 ```bash
+npm run clean          # IMPORTANTE: limpiar resultados acumulados
+npm run test:android
+npm run test:ios
 npm run report
-# Abre el navegador en http://127.0.0.1:<puerto>
 ```
 
-### 4.2 Métricas del run
+### 4.2 Capturas del dashboard
+
+#### Overview — 100% pass rate, 2 test cases
+![Allure Overview](docs/evidencias/08-allure-overview-100pct.png)
+
+#### Suites — Android E2E + iOS Catálogo, ambos en verde
+![Allure Suites](docs/evidencias/09-allure-suites.png)
+
+#### Graphs — Status 100% PASSED, distribución de duración
+![Allure Graphs](docs/evidencias/10-allure-graphs.png)
+
+#### Timeline — Ejecución paralela visualizada
+![Allure Timeline](docs/evidencias/11-allure-timeline.png)
+
+### 4.3 Métricas del run limpio
 
 | Métrica | Valor |
 |---|---|
-| Total de archivos JSON Allure | 4424 |
-| Total de screenshots capturados | 38 |
-| Tests passing | 2/2 (100%) |
-| Tests failing | 0 |
+| Test cases | 2 |
+| Tests PASSED | 2 |
+| Tests FAILED | 0 |
+| Pass rate | **100%** |
+| Categories (defects) | 0 |
+| Severity | normal × 2 |
+| Duración total | 3m 40s (incluye provisioning SauceLabs iOS) |
 
-### 4.3 Características del reporte
+### 4.4 Características del reporte
 - Vista por suite, por feature, por categoría
-- Timeline de steps con duración individual
-- Attachments automáticos (screenshots, logs)
-- Trends entre runs (suite health)
+- Timeline de tests con duración individual
+- Attachments automáticos (screenshots de fallos, page sources)
+- Trends entre runs (suite health, retries, duration)
+
+### 4.5 ⚠️ Lección aprendida — Allure es acumulativo
+Los resultados de Allure NO se limpian automáticamente entre runs. Si tenés resultados viejos en `allure-results/` (de runs fallados o con tests renombrados), el reporte va a mostrarlos como "Test defects" aunque ya estén arreglados.
+
+**Regla de oro**: `npm run clean` antes de regenerar el reporte para entrega oficial.
 
 ---
 
