@@ -219,6 +219,19 @@ npm run report
 
 Abre el reporte HTML en `allure-report/`.
 
+> ⚠️ **IMPORTANTE — Allure es acumulativo**
+>
+> Allure SUMA los resultados de TODOS los runs anteriores que estén en `allure-results/`. Si tenés runs viejos con fallos (locators desactualizados, tests con nombres diferentes), el reporte va a mostrarlos como "Test defects" aunque ya estén arreglados.
+>
+> **Siempre limpiá antes de regenerar un reporte limpio:**
+> ```bash
+> npm run clean       # borra allure-results, allure-report, screenshots, logs
+> npm run test:all    # corre Android + iOS frescos
+> npm run report      # genera reporte limpio (100% pass esperado)
+> ```
+>
+> En CI/CD esto se hace automático con stages secuenciales en el `Jenkinsfile`.
+
 ### Screenshots automáticos
 
 En cada test que **falla**, el hook `afterTest` captura un screenshot en `screenshots/` y lo adjunta al reporte Allure.
